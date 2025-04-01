@@ -45,6 +45,7 @@
                 Console.Clear();
                 AddNewEmployee();
             }
+            else if (input == "3") Environment.Exit(0);
             else
             {
                 Console.Clear();
