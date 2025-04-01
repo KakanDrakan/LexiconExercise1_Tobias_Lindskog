@@ -7,9 +7,9 @@
             private static List<Employee> register = new List<Employee>();   
 
             public string name { get; set; }
-            public string salary {  get; set; }
+            public float salary {  get; set; }
 
-            public Employee(string _name, string _salary)
+            public Employee(string _name, float _salary)
             {
                 name = _name;
                 salary = _salary;
@@ -27,27 +27,28 @@
             Menu();
         }
         
-        static void Menu()
+        static void Menu(string headerMessage = "")
         {
+            if (headerMessage != "") Console.WriteLine(headerMessage);
             Console.WriteLine("Skriv \"1\" för att skriva ut registret");
             Console.WriteLine("Skriv \"2\" för att lägga till en nyanställd");
+            Console.WriteLine("Skriv \"3\" för att avsluta");
             var input = Console.ReadLine();
 
             if (input == "1")
             {
-                Console.WriteLine();
+                Console.Clear();
                 PrintRegister();
             }
             else if (input == "2")
             {
-                Console.WriteLine();
+                Console.Clear();
                 AddNewEmployee();
             }
             else
             {
-                Console.WriteLine();
-                Console.WriteLine("Fel inmatning");
-                Menu();
+                Console.Clear();
+                Menu("Fel inmatning");
             }
         }
         
@@ -59,10 +60,9 @@
                 Console.WriteLine("{0,-20} {1,10}", "Namn", "Lön");
                 foreach (var person in Employee.GetRegister())
                 {
-                    Console.WriteLine("{0, -20} {1, 10}", person.name, person.salary);
+                    Console.WriteLine("{0, -20} {1, 10:C}", person.name, person.salary);
                 }  
             }
-
             
             Console.WriteLine();
             Menu();
@@ -70,15 +70,52 @@
 
         static void AddNewEmployee()
         {
-            Console.WriteLine("Fullständigt namn på den nyanställda: ");
-            string name = Console.ReadLine();
-            Console.WriteLine("Lön på den nyanställda: ");
-            string salary = Console.ReadLine();
-            Employee newHire = new Employee(name, salary);
-            Console.WriteLine("{0} lades till i registret", newHire.name);
+            string name;
+            float salary;
+            Console.Write("Fullständigt namn på den nyanställda: ");
+            do
+            {
+                name = Console.ReadLine();
+            } while (string.IsNullOrWhiteSpace(name));
 
-            Console.WriteLine();
-            Menu();
+            Console.Write("Lön i kr: ");
+            do
+            {
+                salary = ParseStringToFloat(Console.ReadLine());
+            } while (salary==-1);
+
+            Employee newHire = new Employee(name, salary);
+            
+            Console.Clear();
+            Menu($"{newHire.name} lades till i registret");
+        }
+
+        static float ParseStringToFloat(string message)
+        {
+            string stringOfDigits = "";
+            bool success = false;
+            if (message == "")
+            {
+                Console.Write("Du måste skriva ett nummer: ");
+                return -1;
+            }
+            foreach (char character in message.ToCharArray())
+            {
+                
+                if ((character == '.' || character == ',') && !stringOfDigits.Contains(',')) stringOfDigits += ',';
+                else if (char.IsDigit(character))
+                {
+                    stringOfDigits += character;
+                    success = true;
+                }
+                
+            }
+            if (success) return float.Parse(stringOfDigits);
+            else
+            {
+                Console.Write("Du måste skriva ett nummer: ");
+                return -1;    
+            }
         }
     }
 }
